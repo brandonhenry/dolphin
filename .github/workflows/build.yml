@@ -1,0 +1,27 @@
+name: Build Dolphin Emulator
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+        
+    - name: Setup MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake -G "Visual Studio 16 2019" -A x64 ..
+
+    - name: Build with MSBuild
+      run: |
+        cd build
+        msbuild Dolphin.sln /p:Configuration=Release /p:Platform=x64
