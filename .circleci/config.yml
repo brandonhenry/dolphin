@@ -7,7 +7,9 @@ jobs:
       name: win/default
       shell: bash.exe
     steps:
-      - checkout
+      - checkout:
+          submodules:
+            recursive: true
       - run:
           name: Install Dependencies
           command: |
