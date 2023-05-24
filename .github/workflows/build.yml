@@ -13,7 +13,7 @@ jobs:
         submodules: 'recursive'
 
     - name: Setup CMake
-      uses: lukka/get-cmake@v3.20.3
+      uses: scikit-build/setup-cmake@v1
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
