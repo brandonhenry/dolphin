@@ -12,6 +12,12 @@ jobs:
           name: Install Dependencies
           command: |
             choco install -y mingw cmake
+            echo "Cmake location:"
+            which cmake
+      - run:
+          name: Update PATH
+          command: |
+            echo 'export PATH="$PATH:/path/to/cmake"' >> $BASH_ENV
       - run:
           name: Build Dolphin Emulator
           command: |
