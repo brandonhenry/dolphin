@@ -7,9 +7,17 @@ jobs:
       name: win/default
       shell: bash.exe
     steps:
+      - run:
+          name: Install git
+          command: |
+            choco install git -y
       - checkout:
           submodules:
             recursive: true
+      - run:
+          name: Update Git Submodules
+          command: |
+            git submodule update --init --recursive
       - run:
           name: Install Dependencies
           command: |
