@@ -24,4 +24,4 @@ jobs:
     - name: Build with MSBuild
       run: |
         cd build
-        "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" Dolphin.sln /p:Configuration=Release /p:Platform=x64
+        Start-Process -FilePath "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" -ArgumentList "dolphin-emu.sln", "/p:Configuration=Release", "/p:Platform=x64" -Wait
