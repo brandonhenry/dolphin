@@ -12,8 +12,8 @@ jobs:
       with:
         submodules: 'recursive'
 
-    - name: Setup CMake
-      uses: scikit-build/setup-cmake@v1
+    - name: Install CMake
+      run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
 
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
