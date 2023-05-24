@@ -18,6 +18,9 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v1
 
+    - name: Setup MSVC Command Line
+      uses: ilammy/msvc-dev-cmd@v1
+      
     - name: Configure CMake
       run: |
         mkdir build
