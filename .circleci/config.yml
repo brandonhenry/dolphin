@@ -1,9 +1,39 @@
+version: 2.1
+orbs:
+  win: circleci/windows@2.2.0
+jobs:
+  build:
+    executor:
+      name: win/default
+      shell: bash.exe
+    steps:
+      - run:
+          name: Install git
+          command: |
+            choco install git -y
+      - checkout:
+          submodules:
+            recursive: true
+      - run:
+          name: Update Git Submodules
+          command: |
+            git submodule update --init --recursive
+      - run:
+          name: Install Dependencies
+          command: |
+            choco install -y mingw cmake
       - run:
           name: Build Dolphin Emulator
           command: |
             mkdir build
             cd build
             "C:/Program Files/CMake/bin/cmake.exe" ..
-            cd ..
-            cd build
             mingw32-make
+      - store_artifacts:
+          path: build
+          destination: dolphin-build
+workflows:
+  version: 2
+  build-deploy:
+    jobs:
+      - build
