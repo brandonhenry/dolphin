@@ -22,13 +22,16 @@ jobs:
           name: Install Dependencies
           command: |
             choco install -y mingw cmake
-      - run:
+       - run:
           name: Build Dolphin Emulator
           command: |
             mkdir build
             cd build
             "C:/Program Files/CMake/bin/cmake.exe" ..
+            cd ..
+            cd build
             mingw32-make
+
       - store_artifacts:
           path: build
           destination: dolphin-build
