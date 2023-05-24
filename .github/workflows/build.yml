@@ -15,19 +15,13 @@ jobs:
     - name: Install CMake
       run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
 
-    - name: Setup MSBuild
-      uses: microsoft/setup-msbuild@v1
-
-    - name: Setup MSVC Command Line
-      uses: ilammy/msvc-dev-cmd@v1
-      
     - name: Configure CMake
       run: |
         mkdir build
         cd build
-        cmake -G "Visual Studio 16 2019" -A x64 ..
+        cmake ..
 
     - name: Build with MSBuild
       run: |
         cd build
-        msbuild Dolphin.sln /p:Configuration=Release /p:Platform=x64
+        "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\MSBuild\Current\Bin\MSBuild.exe" Dolphin.sln /p:Configuration=Release /p:Platform=x64
