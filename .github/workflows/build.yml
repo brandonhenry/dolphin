@@ -11,10 +11,6 @@ jobs:
       uses: actions/checkout@v2
       with:
         submodules: 'recursive'
-    
-    - name: Checkout specific commit
-      run: |
-        git checkout dadbeb4bae7e7fa23af2b46e0add4143094dc107
 
     - name: Install Visual Studio 2022
       run: |
