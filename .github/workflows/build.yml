@@ -14,7 +14,7 @@ jobs:
 
     - name: Install Visual Studio 2022
       run: |
-        choco install visualstudio2022community --package-parameters "--add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended --add Microsoft.VisualStudio.Component.Git --add Microsoft.VisualStudio.Component.VC.Tools.ARM64" --ignore-package-exit-codes
+        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.NativeDesktop --includeRecommended --add Microsoft.VisualStudio.Component.Git --add Microsoft.VisualStudio.Component.VC.Tools.ARM64" --ignore-package-exit-codes
 
     - name: Install Windows 11 SDK
       run: |
@@ -29,6 +29,6 @@ jobs:
     - name: Build with MSBuild
       run: |
         cd build
-        $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\Community\MSBuild\Current\Bin\MSBuild.exe"
+        $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
         & "${msbuildPath}" ../Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64
       shell: pwsh
