@@ -24,7 +24,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -T version=14.30,host=x64 -DCMAKE_SYSTEM_VERSION=10.0.22621.2
+        cmake .. -DCMAKE_SYSTEM_VERSION=10.0.22621.2
 
     - name: Build with MSBuild
       run: |
