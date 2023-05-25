@@ -28,6 +28,6 @@ jobs:
     - name: Build with MSBuild
       run: |
         cd build
-        $msbuildPath = & "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
+        $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
         & "${msbuildPath}" dolphin-emu.sln /p:Configuration=Release /p:Platform=x64
       shell: pwsh
