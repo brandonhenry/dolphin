@@ -1,0 +1,38 @@
+name: Build Dolphin Emulator
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    
+    - name: Checkout specific commit
+      run: |
+        git checkout dadbeb4bae7e7fa23af2b46e0add4143094dc107
+
+    - name: Install Visual Studio 2022
+      run: |
+        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" --ignore-package-exit-codes
+
+    - name: Install Windows 11 SDK
+      run: |
+        choco install windows-sdk-11-version-22h2-all
+
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_SYSTEM_VERSION=10.0.22621.2
+
+    - name: Build with MSBuild
+      run: |
+        cd build
+        $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
+        & "${msbuildPath}" dolphin-emu.sln /p:Configuration=Release /p:Platform=x64
+      shell: pwsh

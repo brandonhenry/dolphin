@@ -10,6 +10,8 @@
 #include <tuple>
 
 #include <OptionParser.h>
+#include "Core/Config/NetplaySettings.h"
+#include "Core/ConfigManager.h"
 
 #include "Common/Config/Config.h"
 #include "Common/StringUtil.h"
@@ -106,6 +108,13 @@ std::unique_ptr<optparse::OptionParser> CreateParser(ParserOptions options)
       .type("string")
       .help("Load the initial save state");
 
+
+  parser->add_option("-p", "--netplay-port").action("store").help("Netplay port number");
+  parser->add_option("-s", "--netplay-server").action("store").help("Netplay server address");
+  parser->add_option("-N", "--netplay-nickname").action("store").help("Netplay session name");
+  parser->add_option("-P", "--netplay-password").action("store").help("Netplay session password");
+
+
   if (options == ParserOptions::IncludeGUIOptions)
   {
     parser->add_option("-d", "--debugger")
@@ -138,6 +147,34 @@ static void AddConfigLayer(const optparse::Values& options)
       std::move(config_args), static_cast<const char*>(options.get("video_backend")),
       static_cast<const char*>(options.get("audio_emulation")),
       static_cast<bool>(options.get("batch")), static_cast<bool>(options.get("debugger"))));
+
+  std::unique_ptr<Config::ConfigLayerLoader> loader = std::make_unique<Config::CommandLineConfigLayerLoader>(options);
+
+  if (options.HasOption("netplay-server"))
+  {
+    std::string server = options.Get<std::string>("netplay-server");
+    Config::SetBaseOrCurrent(Config::NETPLAY_TRAVERSAL_SERVER, server);
+  }
+  
+  if (options.HasOption("netplay-port"))
+  {
+    u16 port = options.Get<u16>("netplay-port");
+    Config::SetBaseOrCurrent(Config::NETPLAY_HOST_PORT, port);
+  }
+  
+  if (options.HasOption("netplay-nickname"))
+  {
+    std::string nickname = options.Get<std::string>("netplay-nickname");
+    Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
+  }
+
+  if (options.HasOption("netplay-password"))
+  {
+    std::string password = options.Get<std::string>("netplay-password");
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
+  }
+
+  Config::AddLayer(std::move(loader));
 }
 
 optparse::Values& ParseArguments(optparse::OptionParser* parser, int argc, char** argv)
