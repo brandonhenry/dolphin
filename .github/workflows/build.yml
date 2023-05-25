@@ -24,7 +24,7 @@ jobs:
       run: |
         mkdir build
         cd build
-        cmake .. -DCMAKE_SYSTEM_VERSION=10.0.22621.2
+        cmake .. --no-warn-unused-cli -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE -DCMAKE_BUILD_TYPE:STRING=Release -G "Visual Studio 15 2017" -T host=x86 -A x64
 
     - name: Build with MSBuild
       run: |
@@ -32,3 +32,4 @@ jobs:
         $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
         & "${msbuildPath}" Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64
       shell: pwsh
+ The command: "C:\Program Files\CMake\bin\cmake.EXE" 
