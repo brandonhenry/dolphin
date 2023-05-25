@@ -108,12 +108,10 @@ std::unique_ptr<optparse::OptionParser> CreateParser(ParserOptions options)
       .type("string")
       .help("Load the initial save state");
 
-
   parser->add_option("-p", "--netplay-port").action("store").help("Netplay port number");
   parser->add_option("-s", "--netplay-server").action("store").help("Netplay server address");
   parser->add_option("-N", "--netplay-nickname").action("store").help("Netplay session name");
   parser->add_option("-P", "--netplay-password").action("store").help("Netplay session password");
-
 
   if (options == ParserOptions::IncludeGUIOptions)
   {
@@ -143,38 +141,34 @@ static void AddConfigLayer(const optparse::Values& options)
   if (options.is_set_by_user("config"))
     config_args = options.all("config");
 
-  Config::AddLayer(std::make_unique<CommandLineConfigLayerLoader>(
+  Config::AddLayer(std::make_unique<CommandLineParse::CommandLineConfigLayerLoader>(
       std::move(config_args), static_cast<const char*>(options.get("video_backend")),
       static_cast<const char*>(options.get("audio_emulation")),
       static_cast<bool>(options.get("batch")), static_cast<bool>(options.get("debugger"))));
 
-  std::unique_ptr<Config::ConfigLayerLoader> loader = std::make_unique<Config::CommandLineConfigLayerLoader>(options);
-
-  if (options.HasOption("netplay-server"))
+  if (options.is_set_by_user("netplay-server"))
   {
-    std::string server = options.Get<std::string>("netplay-server");
+    std::string server = options["netplay-server"];
     Config::SetBaseOrCurrent(Config::NETPLAY_TRAVERSAL_SERVER, server);
   }
-  
-  if (options.HasOption("netplay-port"))
+
+  if (options.is_set_by_user("netplay-port"))
   {
-    u16 port = options.Get<u16>("netplay-port");
+    u16 port = std::stoi(options["netplay-port"]);
     Config::SetBaseOrCurrent(Config::NETPLAY_HOST_PORT, port);
   }
-  
-  if (options.HasOption("netplay-nickname"))
+
+  if (options.is_set_by_user("netplay-nickname"))
   {
-    std::string nickname = options.Get<std::string>("netplay-nickname");
+    std::string nickname = options["netplay-nickname"];
     Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
   }
 
-  if (options.HasOption("netplay-password"))
+  if (options.is_set_by_user("netplay-password"))
   {
-    std::string password = options.Get<std::string>("netplay-password");
+    std::string password = options["netplay-password"];
     Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
   }
-
-  Config::AddLayer(std::move(loader));
 }
 
 optparse::Values& ParseArguments(optparse::OptionParser* parser, int argc, char** argv)
