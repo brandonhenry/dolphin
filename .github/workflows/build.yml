@@ -32,3 +32,9 @@ jobs:
           $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
           & "${msbuildPath}" ../Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
         shell: pwsh
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: Build/
