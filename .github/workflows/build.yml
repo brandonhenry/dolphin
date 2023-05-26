@@ -44,7 +44,7 @@ jobs:
         run: |
           mkdir build
           cd build
-          & "${env:MSBUILD_PATH}" ../Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+          "${env:MSBUILD_PATH}" ../Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
         shell: pwsh
 
       - name: Upload artifact
