@@ -4,9 +4,6 @@ on: [push, pull_request]
 env:
   build_type: Release
   visual_studio_version: 16
-  qt_dir: '${{ runner.temp }}/Qt/5.15.2/msvc2019_64'
-  build_dir: Build
-  deploy_dir: Deploy
 
 jobs:
   build:
@@ -21,7 +18,10 @@ jobs:
         run: |
           git submodule init
           git submodule update
-
+          
+      - name: Install dependencies
+        run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64" "--ignore-package-exit-codes"
+      
       - name: Install Qt
         uses: jurplel/install-qt-action@v2
         with:
@@ -30,34 +30,25 @@ jobs:
           target: 'desktop'
           arch: 'win64_msvc2019_64'
           dir: '${{ runner.temp }}/Qt'  # where to install Qt
-          
-      - name: Install dependencies
-        run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64" "--ignore-package-exit-codes"
-      
+
+      - name: Set up environment variables
+        id: set-env
+        run: |
+          echo "QT_DIR=${{ runner.temp }}/Qt/5.15.2/msvc2019_64" >> $GITHUB_ENV
+          echo "MSBUILD_PATH=${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe" >> $GITHUB_ENV
+
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
       
       - name: Build with MSBuild
         run: |
-          mkdir ${env:build_dir}
-          cd ${env:build_dir}
-          $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
-          & "${msbuildPath}" ../Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
-        shell: pwsh
-
-      - name: Deploy Qt
-        run: |
-          mkdir ${env:deploy_dir}
-          & "${env:qt_dir}/bin/windeployqt.exe" --compiler-runtime --dir ${env:deploy_dir} ${env:build_dir}/Dolphin.exe
-        shell: pwsh
-
-      - name: Zip files
-        run: |
-          Compress-Archive -Path ${env:deploy_dir}/* -DestinationPath ${env:build_dir}/Dolphin.zip
+          mkdir build
+          cd build
+          & "${env:MSBUILD_PATH}" ../Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
         shell: pwsh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v2
         with:
           name: build
-          path: ${env:build_dir}/Dolphin.zip
+          path: Build/
