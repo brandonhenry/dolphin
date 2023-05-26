@@ -391,3 +391,63 @@ void NetPlaySetupDialog::ResetTraversalHost()
           .arg(QString::fromStdString(Config::NETPLAY_TRAVERSAL_SERVER.GetDefaultValue()),
                QString::number(Config::NETPLAY_TRAVERSAL_PORT.GetDefaultValue())));
 }
+
+void NetPlaySetupDialog::SetNickname(const std::string& nickname)
+{
+    m_nickname_edit->setText(QString::fromStdString(nickname));
+}
+
+void NetPlaySetupDialog::SetConnectionType(int index)
+{
+    m_connection_type->setCurrentIndex(index);
+    OnConnectionTypeChanged(index);
+}
+
+void NetPlaySetupDialog::SetConnectPort(int port)
+{
+    m_connect_port_box->setValue(port);
+}
+
+void NetPlaySetupDialog::SetHostPort(int port)
+{
+    m_host_port_box->setValue(port);
+}
+
+void NetPlaySetupDialog::SetHostForcePort(bool enabled, int port)
+{
+    m_host_force_port_check->setChecked(enabled);
+    m_host_force_port_box->setValue(port);
+    m_host_force_port_box->setEnabled(enabled);
+}
+
+void NetPlaySetupDialog::SetHostServerBrowser(bool enabled)
+{
+    m_host_server_browser->setChecked(enabled);
+    m_host_server_region->setEnabled(enabled);
+    m_host_server_name->setEnabled(enabled);
+    m_host_server_password->setEnabled(enabled);
+}
+
+void NetPlaySetupDialog::SetHostServerRegion(const std::string& region)
+{
+    int index = m_host_server_region->findData(QString::fromStdString(region));
+    if (index != -1)
+        m_host_server_region->setCurrentIndex(index);
+}
+
+void NetPlaySetupDialog::SetHostServerName(const std::string& name)
+{
+    m_host_server_name->setText(QString::fromStdString(name));
+}
+
+void NetPlaySetupDialog::SetHostServerPassword(const std::string& password)
+{
+    m_host_server_password->setText(QString::fromStdString(password));
+}
+
+void NetPlaySetupDialog::SetHostChunkedUploadLimit(bool enabled, u32 limit)
+{
+    m_host_chunked_upload_limit_check->setChecked(enabled);
+    m_host_chunked_upload_limit_box->setValue(limit);
+    m_host_chunked_upload_limit_box->setEnabled(enabled);
+}

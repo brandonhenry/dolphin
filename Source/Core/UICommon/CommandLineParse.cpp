@@ -108,10 +108,9 @@ std::unique_ptr<optparse::OptionParser> CreateParser(ParserOptions options)
       .type("string")
       .help("Load the initial save state");
 
-  parser->add_option("-p", "--netplay-port").action("store").help("Netplay port number");
-  parser->add_option("-s", "--netplay-server").action("store").help("Netplay server address");
-  parser->add_option("-N", "--netplay-nickname").action("store").help("Netplay session name");
-  parser->add_option("-P", "--netplay-password").action("store").help("Netplay session password");
+    parser->add_option("-n", "--netplay-nickname").action("store").help("Netplay session name");
+    parser->add_option("-P", "--netplay-password").action("store").help("Netplay session password");
+    parser->add_option("-H", "--netplay-host-session").action("store").help("Host a NetPlay session with the specified game ID.");
 
   if (options == ParserOptions::IncludeGUIOptions)
   {
@@ -145,29 +144,23 @@ static void AddConfigLayer(const optparse::Values& options)
       std::move(config_args), static_cast<const char*>(options.get("video_backend")),
       static_cast<const char*>(options.get("audio_emulation")),
       static_cast<bool>(options.get("batch")), static_cast<bool>(options.get("debugger"))));
-
-  if (options.is_set_by_user("netplay-server"))
+  
+  if (options.HasOption("netplay-nickname"))
   {
-    std::string server = options["netplay-server"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_TRAVERSAL_SERVER, server);
-  }
-
-  if (options.is_set_by_user("netplay-port"))
-  {
-    u16 port = std::stoi(options["netplay-port"]);
-    Config::SetBaseOrCurrent(Config::NETPLAY_HOST_PORT, port);
-  }
-
-  if (options.is_set_by_user("netplay-nickname"))
-  {
-    std::string nickname = options["netplay-nickname"];
+    std::string nickname = options.Get<std::string>("netplay-nickname");
     Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
   }
 
-  if (options.is_set_by_user("netplay-password"))
+  if (options.HasOption("netplay-password"))
   {
-    std::string password = options["netplay-password"];
+    std::string password = options.Get<std::string>("netplay-password");
     Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
+  }
+  
+  if (options.HasOption("netplay-host-session"))
+  {
+    std::string game_id = options.Get<std::string>("netplay-host-session");
+    Config::SetBaseOrCurrent(Config::NETPLAY_GAME_ID, game_id);
   }
 }
 

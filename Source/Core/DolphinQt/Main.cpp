@@ -29,6 +29,9 @@
 #include "Core/Core.h"
 #include "Core/DolphinAnalytics.h"
 
+#include "Common/Config/Config.h"  // Newly added import
+#include "Core/Config/NetplaySettings.h"  // Newly added import
+
 #include "DolphinQt/Host.h"
 #include "DolphinQt/MainWindow.h"
 #include "DolphinQt/QtUtils/ModalMessageBox.h"
@@ -224,6 +227,33 @@ int main(int argc, char* argv[])
     boot = BootParameters::GenerateFromFile(
         args.front(), BootSessionData(save_state_path, DeleteSavestateAfterBoot::No));
     game_specified = true;
+  }
+
+  // Netplay options
+  if (options.is_set("netplay-host-session"))
+  {
+    std::string game_id = static_cast<const char*>(options.get("netplay-host-session"));
+    Config::SetBaseOrCurrent(Config::NETPLAY_GAME_ID, game_id);
+
+    // Create an instance of NetPlaySetupDialog and set the netplay options
+    NetPlaySetupDialog dialog(game_list_model);
+    dialog.SetHostServerBrowser(true);
+    dialog.SetNickname(Config::Get(Config::NETPLAY_NICKNAME));
+    dialog.SetHostServerName(Config::Get(Config::NETPLAY_GAME_ID));
+    dialog.SetHostServerPassword(Config::Get(Config::NETPLAY_INDEX_PASSWORD));
+    dialog.SetConnectionType(1);  // Set the connection type to traversal
+    // Call the `accept` function to start hosting
+    dialog.accept();
+  }
+  else if (options.is_set("netplay-nickname"))
+  {
+    std::string nickname = static_cast<const char*>(options.get("netplay-nickname"));
+    Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
+  }
+  else if (options.is_set("netplay-password"))
+  {
+    std::string password = static_cast<const char*>(options.get("netplay-password"));
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
   }
 
   int retval;
