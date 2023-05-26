@@ -24,26 +24,13 @@ jobs:
       
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v1.0.2
-
-      - name: Install Qt
-        run: |
-          Invoke-WebRequest -OutFile qt-installer.exe https://download.qt.io/official_releases/qt/5.15/5.15.2/qt-opensource-windows-x86-5.15.2.exe
-          Start-Process qt-installer.exe -ArgumentList '--verbose --script qt-installer-noninteractive.qs' -NoNewWindow -Wait
-
-      - name: Set QT_DIR environment variable
-        run: echo "QT_DIR=${env:ProgramFiles}/Qt/5.15.2/msvc2019_64" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-
+      
       - name: Build with MSBuild
         run: |
           mkdir build
           cd build
           $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
           & "${msbuildPath}" ../Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
-        shell: pwsh
-
-      - name: Bundle Qt libraries
-        run: |
-          & "${env:QT_DIR}/bin/windeployqt.exe" --no-opengl-sw Build/Dolphin/Dolphin.exe
         shell: pwsh
 
       - name: Upload artifact
