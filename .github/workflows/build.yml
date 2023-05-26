@@ -1,38 +1,40 @@
 name: Build Dolphin Emulator
-
 on: [push, pull_request]
+
+env:
+  build_type: Release
+  visual_studio_version: 16
 
 jobs:
   build:
     runs-on: windows-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
-      with:
-        submodules: 'recursive'
-    
-    - name: Checkout specific commit
-      run: |
-        git checkout dadbeb4bae7e7fa23af2b46e0add4143094dc107
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+      
+      - name: Update Submodules
+        run: |
+          git submodule init
+          git submodule update
+          
+      - name: Install dependencies
+        run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64" "--ignore-package-exit-codes"
+      
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v1.0.2
+      
+      - name: Build with MSBuild
+        run: |
+          mkdir build
+          cd build
+          $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
+          & "${msbuildPath}" ../Source/dolphin-emu.sln /p:Configuration=Release /p:Platform=x64 /p:PlatformToolset=v143
+        shell: pwsh
 
-    - name: Install Visual Studio 2022
-      run: |
-        choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Workload.VCTools --includeRecommended" --ignore-package-exit-codes
-
-    - name: Install Windows 11 SDK
-      run: |
-        choco install windows-sdk-11-version-22h2-all
-
-    - name: Configure CMake
-      run: |
-        mkdir build
-        cd build
-        cmake .. -DCMAKE_SYSTEM_VERSION=10.0.22621.2
-
-    - name: Build with MSBuild
-      run: |
-        cd build
-        $msbuildPath = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
-        & "${msbuildPath}" dolphin-emu.sln /p:Configuration=Release /p:Platform=x64
-      shell: pwsh
+      - name: Upload artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: build
+          path: Build/
