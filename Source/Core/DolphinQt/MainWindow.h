@@ -73,7 +73,7 @@ public:
   explicit MainWindow(std::unique_ptr<BootParameters> boot_parameters,
                       const std::string& movie_path);
   ~MainWindow();
-
+  GetMainWindow() { return this; }
   void Show();
 
   bool eventFilter(QObject* object, QEvent* event) override;
