@@ -78,6 +78,8 @@ public:
 
   bool eventFilter(QObject* object, QEvent* event) override;
 
+  GameList* GetGameList() const { return m_game_list; }
+
 signals:
   void ReadOnlyModeChanged(bool read_only);
   void RecordingStatusChanged(bool recording);

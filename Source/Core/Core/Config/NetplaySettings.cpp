@@ -23,6 +23,7 @@ const Info<std::string> NETPLAY_INDEX_URL{{System::Main, "NetPlay", "IndexServer
 
 const Info<bool> NETPLAY_USE_INDEX{{System::Main, "NetPlay", "UseIndex"}, false};
 const Info<std::string> NETPLAY_INDEX_NAME{{System::Main, "NetPlay", "IndexName"}, ""};
+const Info<std::string> NETPLAY_INDEX_GAME_NAME{{System::Main, "NetPlay", "IndexGameName"}, ""};
 const Info<std::string> NETPLAY_INDEX_REGION{{System::Main, "NetPlay", "IndexRegion"}, ""};
 const Info<std::string> NETPLAY_INDEX_PASSWORD{{System::Main, "NetPlay", "IndexPassword"}, ""};
 

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "UICommon/CommandLineParse.h"
+#include "DolphinQt/NetPlay/NetPlaySetupDialog.h"
 
 #include <list>
 #include <optional>
@@ -108,9 +109,11 @@ std::unique_ptr<optparse::OptionParser> CreateParser(ParserOptions options)
       .type("string")
       .help("Load the initial save state");
 
-    parser->add_option("-n", "--netplay-nickname").action("store").help("Netplay session name");
-    parser->add_option("-P", "--netplay-password").action("store").help("Netplay session password");
-    parser->add_option("-H", "--netplay-host-session").action("store").help("Host a NetPlay session with the specified game ID.");
+  parser->add_option("-u", "--netplay-nickname").action("store").help("Netplay session nickname");
+  parser->add_option("-P", "--netplay-password").action("store").help("Netplay session password");
+  parser->add_option("-n", "--netplay-room").action("store").help("Netplay session room name");
+  parser->add_option("-r", "--netplay-region").action("store").help("Netplay session region");
+  parser->add_option("-H", "--netplay-host-session").action("store").help("Host a NetPlay session with the specified game ID.");
 
   if (options == ParserOptions::IncludeGUIOptions)
   {
@@ -145,22 +148,34 @@ static void AddConfigLayer(const optparse::Values& options)
       static_cast<const char*>(options.get("audio_emulation")),
       static_cast<bool>(options.get("batch")), static_cast<bool>(options.get("debugger"))));
   
-  if (options.HasOption("netplay-nickname"))
+  if (options.is_set("netplay-nickname"))
   {
-    std::string nickname = options.Get<std::string>("netplay-nickname");
+    std::string nickname = options["netplay-nickname"];
     Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
   }
 
-  if (options.HasOption("netplay-password"))
+  if (options.is_set("netplay-password"))
   {
-    std::string password = options.Get<std::string>("netplay-password");
+    std::string password = options["netplay-password"];
     Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
   }
   
-  if (options.HasOption("netplay-host-session"))
+  if (options.is_set("netplay-room"))
   {
-    std::string game_id = options.Get<std::string>("netplay-host-session");
-    Config::SetBaseOrCurrent(Config::NETPLAY_GAME_ID, game_id);
+    std::string room_name = options["netplay-room"];
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_NAME, room_name);
+  }
+
+  if (options.is_set("netplay-region"))
+  {
+    std::string region = options["netplay-region"];
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_REGION, region);
+  }
+
+  if (options.is_set("netplay-host-session"))
+  {
+    std::string game_file_name = options["netplay-host-session"];
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_GAME_NAME, game_file_name);
   }
 }
 

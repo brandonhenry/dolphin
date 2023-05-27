@@ -29,8 +29,12 @@ class NetPlaySetupDialog : public QDialog
 public:
   explicit NetPlaySetupDialog(const GameListModel& game_list_model, QWidget* parent);
 
+  void SetupAndHost();
   void accept() override;
   void show();
+  void remote_host();
+  void SetCurrentGameByName(const std::string& filename);
+
 
 signals:
   bool Join();

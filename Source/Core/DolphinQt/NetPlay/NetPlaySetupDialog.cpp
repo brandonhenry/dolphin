@@ -288,6 +288,16 @@ void NetPlaySetupDialog::SaveSettings()
                            m_host_server_password->text().toStdString());
 }
 
+void NetPlaySetupDialog::SetupAndHost()
+{
+  // Config::SetBaseOrCurrent(Config::NETPLAY_HOST_CODE, "00000000");
+  Config::SetBaseOrCurrent(Config::NETPLAY_TRAVERSAL_CHOICE, "traversal");
+  Config::SetBaseOrCurrent(Config::NETPLAY_USE_INDEX, true);
+  const std::string& game_file_name = Config::Get(Config::NETPLAY_INDEX_GAME_NAME);
+  SetCurrentGameByName(game_file_name);
+  remote_host();
+}
+
 void NetPlaySetupDialog::OnConnectionTypeChanged(int index)
 {
   m_connect_port_box->setHidden(index != 0);
@@ -353,6 +363,17 @@ void NetPlaySetupDialog::accept()
   }
 }
 
+void NetPlaySetupDialog::remote_host()
+{
+    auto items = m_host_games->selectedItems();
+    if (items.empty())
+    {
+      ModalMessageBox::critical(this, tr("Error"), tr("You must select a game to host!"));
+      return;
+    }
+    emit Host(*items[0]->data(Qt::UserRole).value<std::shared_ptr<const UICommon::GameFile>>());
+}
+
 void NetPlaySetupDialog::PopulateGameList()
 {
   QSignalBlocker blocker(m_host_games);
@@ -392,62 +413,23 @@ void NetPlaySetupDialog::ResetTraversalHost()
                QString::number(Config::NETPLAY_TRAVERSAL_PORT.GetDefaultValue())));
 }
 
-void NetPlaySetupDialog::SetNickname(const std::string& nickname)
+void NetPlaySetupDialog::SetCurrentGameByName(const std::string& filename)
 {
-    m_nickname_edit->setText(QString::fromStdString(nickname));
-}
+    // Iterate over the items in m_host_games
+    for (int i = 0; i < m_host_games->count(); i++)
+    {
+        // Get the current item
+        QListWidgetItem* item = m_host_games->item(i);
 
-void NetPlaySetupDialog::SetConnectionType(int index)
-{
-    m_connection_type->setCurrentIndex(index);
-    OnConnectionTypeChanged(index);
-}
+        // Get the game file associated with the item
+        std::shared_ptr<const UICommon::GameFile> game = item->data(Qt::UserRole).value<std::shared_ptr<const UICommon::GameFile>>();
 
-void NetPlaySetupDialog::SetConnectPort(int port)
-{
-    m_connect_port_box->setValue(port);
-}
-
-void NetPlaySetupDialog::SetHostPort(int port)
-{
-    m_host_port_box->setValue(port);
-}
-
-void NetPlaySetupDialog::SetHostForcePort(bool enabled, int port)
-{
-    m_host_force_port_check->setChecked(enabled);
-    m_host_force_port_box->setValue(port);
-    m_host_force_port_box->setEnabled(enabled);
-}
-
-void NetPlaySetupDialog::SetHostServerBrowser(bool enabled)
-{
-    m_host_server_browser->setChecked(enabled);
-    m_host_server_region->setEnabled(enabled);
-    m_host_server_name->setEnabled(enabled);
-    m_host_server_password->setEnabled(enabled);
-}
-
-void NetPlaySetupDialog::SetHostServerRegion(const std::string& region)
-{
-    int index = m_host_server_region->findData(QString::fromStdString(region));
-    if (index != -1)
-        m_host_server_region->setCurrentIndex(index);
-}
-
-void NetPlaySetupDialog::SetHostServerName(const std::string& name)
-{
-    m_host_server_name->setText(QString::fromStdString(name));
-}
-
-void NetPlaySetupDialog::SetHostServerPassword(const std::string& password)
-{
-    m_host_server_password->setText(QString::fromStdString(password));
-}
-
-void NetPlaySetupDialog::SetHostChunkedUploadLimit(bool enabled, u32 limit)
-{
-    m_host_chunked_upload_limit_check->setChecked(enabled);
-    m_host_chunked_upload_limit_box->setValue(limit);
-    m_host_chunked_upload_limit_box->setEnabled(enabled);
+        // Compare the filename with the name of the game file
+        if (game->GetFileName() == filename)
+        {
+            // If they match, set the current item to this item and break the loop
+            m_host_games->setCurrentItem(item);
+            break;
+        }
+    }
 }

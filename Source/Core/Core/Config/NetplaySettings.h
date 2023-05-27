@@ -32,6 +32,7 @@ extern const Info<bool> NETPLAY_ENABLE_QOS;
 
 extern const Info<bool> NETPLAY_USE_INDEX;
 extern const Info<std::string> NETPLAY_INDEX_REGION;
+extern const Info<std::string> NETPLAY_INDEX_GAME_NAME;
 extern const Info<std::string> NETPLAY_INDEX_NAME;
 extern const Info<std::string> NETPLAY_INDEX_PASSWORD;
 
