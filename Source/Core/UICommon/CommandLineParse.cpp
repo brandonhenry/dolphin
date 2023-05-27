@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "UICommon/CommandLineParse.h"
-#include "DolphinQt/NetPlay/NetPlaySetupDialog.h"
 
 #include <list>
 #include <optional>
