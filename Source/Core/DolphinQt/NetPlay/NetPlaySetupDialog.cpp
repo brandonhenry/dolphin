@@ -293,8 +293,7 @@ void NetPlaySetupDialog::SetupAndHost()
   // Config::SetBaseOrCurrent(Config::NETPLAY_HOST_CODE, "00000000");
   Config::SetBaseOrCurrent(Config::NETPLAY_TRAVERSAL_CHOICE, "traversal");
   Config::SetBaseOrCurrent(Config::NETPLAY_USE_INDEX, true);
-  const std::string& game_file_name = Config::Get(Config::NETPLAY_INDEX_GAME_NAME);
-  SetCurrentGameByName(game_file_name);
+  
   remote_host();
 }
 

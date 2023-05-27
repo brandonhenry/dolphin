@@ -174,7 +174,6 @@ static void AddConfigLayer(const optparse::Values& options)
   if (options.is_set("netplay-host-session"))
   {
     std::string game_file_name = options["netplay-host-session"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_GAME_NAME, game_file_name);
   }
 }
 
