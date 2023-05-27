@@ -236,33 +236,29 @@ int main(int argc, char* argv[])
   {
     DolphinAnalytics::Instance().ReportDolphinStart("qt");
 
+    std::string nickname = options["netplay-nickname"];
+    Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
+
+    std::string password = options["netplay-password"];
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
+
+    std::string room = options["netplay-room"];
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_NAME, room);
+
+    std::string region = options["netplay-region"];
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_REGION, region);
+
+    std::string game = options["netplay-host-session"];
+    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_GAME_NAME, game);
+
     MainWindow win{std::move(boot), static_cast<const char*>(options.get("movie"))};
     Settings::Instance().SetCurrentUserStyle(Settings::Instance().GetCurrentUserStyle());
     win.Show();
     const auto& game_list_model = win.GetGameList()->GetGameListModel();
     // Create dialog (replace game_list_model and parent with appropriate values)
     NetPlaySetupDialog dialog(game_list_model, &win);
+
     dialog.SetupAndHost();
-  }
-  else if (options.is_set("netplay-nickname"))
-  {
-    std::string nickname = options["netplay-nickname"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
-  }
-  else if (options.is_set("netplay-password"))
-  {
-    std::string password = options["netplay-password"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
-  }
-  else if (options.is_set("netplay-region"))
-  {
-    std::string region = options["netplay-region"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_REGION, region);
-  }
-  else if (options.is_set("netplay-room"))
-  {
-    std::string room = options["netplay-room"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_NAME, room);
   }
 
   int retval;
