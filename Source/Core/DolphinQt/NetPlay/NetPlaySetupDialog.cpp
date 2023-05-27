@@ -424,12 +424,19 @@ void NetPlaySetupDialog::SetCurrentGameByName(const std::string& filename)
         // Get the game file associated with the item
         std::shared_ptr<const UICommon::GameFile> game = item->data(Qt::UserRole).value<std::shared_ptr<const UICommon::GameFile>>();
 
+        std::cout << "Checking game: " << game->GetFileName() << std::endl;
+
         // Compare the filename with the name of the game file
         if (game->GetFileName() == filename)
         {
             // If they match, set the current item to this item and break the loop
             m_host_games->setCurrentItem(item);
-            break;
+            std::cout << "Match found, game set: " << game->GetFileName() << std::endl;
+            return;
         }
     }
+    // If no match found, log an error
+    std::cerr << "No match found for filename: " << filename << std::endl;
+    ModalMessageBox::critical(this, tr("Error"), tr("You must provide a game to host!"));
+      return;
 }
