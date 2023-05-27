@@ -235,6 +235,7 @@ int main(int argc, char* argv[])
   // Netplay options
   if (options.is_set("netplay-host-session"))
   {
+    
     DolphinAnalytics::Instance().ReportDolphinStart("qt");
 
     std::string nickname = options["netplay-nickname"];
@@ -257,6 +258,7 @@ int main(int argc, char* argv[])
 
     UICommon::GameFile game_file(game_file_path);
     win.NetPlayRemoteHost(game_file);
+    return app.exec();
   }
 
   int retval;
