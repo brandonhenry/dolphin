@@ -79,6 +79,8 @@ public:
 
   GameList* GetGameList() const { return m_game_list; }
 
+  bool NetPlayRemoteHost(const UICommon::GameFile& game);
+
 signals:
   void ReadOnlyModeChanged(bool read_only);
   void RecordingStatusChanged(bool recording);

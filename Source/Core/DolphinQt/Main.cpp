@@ -33,6 +33,7 @@
 #include "Core/Config/NetplaySettings.h"  // Newly added import
 #include "DolphinQt/NetPlay/NetPlaySetupDialog.h"
 #include "GameList.h"
+#include "UICommon/GameFile.h"
 
 #include "DolphinQt/Host.h"
 #include "DolphinQt/MainWindow.h"
@@ -248,17 +249,14 @@ int main(int argc, char* argv[])
     std::string region = options["netplay-region"];
     Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_REGION, region);
 
-    std::string game = options["netplay-host-session"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_GAME_NAME, game);
+    std::string game_file_path = options["netplay-host-session"];
 
     MainWindow win{std::move(boot), static_cast<const char*>(options.get("movie"))};
     Settings::Instance().SetCurrentUserStyle(Settings::Instance().GetCurrentUserStyle());
     win.Show();
-    const auto& game_list_model = win.GetGameList()->GetGameListModel();
-    // Create dialog (replace game_list_model and parent with appropriate values)
-    NetPlaySetupDialog dialog(game_list_model, &win);
 
-    dialog.SetupAndHost();
+    UICommon::GameFile game_file(game_file_path);
+    win.NetPlayRemoteHost(game_file);
   }
 
   int retval;

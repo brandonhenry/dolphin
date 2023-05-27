@@ -1589,6 +1589,57 @@ bool MainWindow::NetPlayHost(const UICommon::GameFile& game)
   return NetPlayJoin();
 }
 
+
+bool MainWindow::NetPlayRemoteHost(const UICommon::GameFile& game)
+{
+  if (Core::IsRunning())
+  {
+    ModalMessageBox::critical(nullptr, tr("Error"),
+                              tr("Can't start a NetPlay Session while a game is still running!"));
+    return false;
+  }
+
+  if (m_netplay_dialog->isVisible())
+  {
+    ModalMessageBox::critical(nullptr, tr("Error"),
+                              tr("A NetPlay Session is already in progress!"));
+    return false;
+  }
+
+  // Settings
+  u16 host_port = Config::Get(Config::NETPLAY_HOST_PORT);
+  const std::string traversal_choice = Config::Get(Config::NETPLAY_TRAVERSAL_CHOICE);
+  const bool is_traversal = traversal_choice == "traversal";
+  const bool use_upnp = Config::Get(Config::NETPLAY_USE_UPNP);
+
+  const std::string traversal_host = Config::Get(Config::NETPLAY_TRAVERSAL_SERVER);
+  const u16 traversal_port = Config::Get(Config::NETPLAY_TRAVERSAL_PORT);
+
+  if (is_traversal)
+    host_port = Config::Get(Config::NETPLAY_LISTEN_PORT);
+
+  // Create Server
+  Settings::Instance().ResetNetPlayServer(new NetPlay::NetPlayServer(
+      host_port, use_upnp, m_netplay_dialog,
+      NetPlay::NetTraversalConfig{is_traversal, traversal_host, traversal_port}));
+
+  if (!Settings::Instance().GetNetPlayServer()->is_connected)
+  {
+    ModalMessageBox::critical(
+        nullptr, tr("Failed to open server"),
+        tr("Failed to listen on port %1. Is another instance of the NetPlay server running?")
+            .arg(host_port));
+    NetPlayQuit();
+    return false;
+  }
+
+  Settings::Instance().GetNetPlayServer()->ChangeGame(game.GetSyncIdentifier(),
+                                                      m_game_list->GetNetPlayName(game));
+
+  // Join our local server
+  return NetPlayJoin();
+}
+
 void MainWindow::NetPlayQuit()
 {
   Settings::Instance().ResetNetPlayClient();
