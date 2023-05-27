@@ -241,7 +241,7 @@ int main(int argc, char* argv[])
     win.Show();
     const auto& game_list_model = win.GetGameList()->GetGameListModel();
     // Create dialog (replace game_list_model and parent with appropriate values)
-    NetPlaySetupDialog dialog(game_list_model, MainWindow::GetMainWindow());
+    NetPlaySetupDialog dialog(game_list_model, &win);
     dialog.SetupAndHost();
   }
   else if (options.is_set("netplay-nickname"))
