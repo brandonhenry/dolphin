@@ -446,6 +446,8 @@ add_library(core
   NetPlayCommon.cpp
   NetPlayCommon.h
   NetPlayServer.cpp
+  NetPlayConfig.cpp
+  NetPlayConfig.h
   NetPlayServer.h
   NetworkCaptureLogger.cpp
   NetworkCaptureLogger.h
