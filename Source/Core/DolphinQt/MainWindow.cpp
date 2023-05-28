@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 
 #include "DolphinQt/MainWindow.h"
-
+#include "Common/FileUtil.h"
 #include <QApplication>
 #include <QCloseEvent>
 #include <QDateTime>
@@ -63,6 +63,7 @@
 #include "Core/NetPlayClient.h"
 #include "Core/NetPlayProto.h"
 #include "Core/NetPlayServer.h"
+#include "Core/NetPlayConfig.h"
 #include "Core/State.h"
 #include "Core/System.h"
 #include "Core/WiiUtils.h"
@@ -1987,7 +1988,14 @@ void MainWindow::Show()
     StartGame(std::move(m_pending_boot));
     m_pending_boot.reset();
   }
+
   
+  std::string config_path = File::GetUserPath(D_CONFIG_IDX) + "netplay_config.txt";
+  NetPlayConfig config(config_path);
+
+  if (config.IsValid()) {
+      RemoteHost(config.GetNickname(), config.GetPassword(), config.GetRoom(), config.GetRegion(), config.GetFilename());
+  }
 }
 
 void MainWindow::RemoteHost(const std::string& nickname, const std::string& password, 
@@ -2019,10 +2027,13 @@ void MainWindow::RemoteHost(const std::string& nickname, const std::string& pass
         }
     }
 
+    NetPlayRemoteHost(*m_game_list->GetGameListModel().GetGameFile(0));
+
     std::cerr << "Error: No game matching filename " << filename << " found in game list.\n";
   } 
   catch(const std::exception& e) 
   {
+    NetPlayRemoteHost(*m_game_list->GetGameListModel().GetGameFile(0));
     std::cerr << "An error occurred while setting up netplay: " << e.what() << "\n";
   }
 }
