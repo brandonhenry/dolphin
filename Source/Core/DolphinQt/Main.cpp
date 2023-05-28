@@ -12,6 +12,7 @@
 #ifdef __linux__
 #include <cstdlib>
 #endif
+#include <iostream>
 
 #include <OptionParser.h>
 #include <QAbstractEventDispatcher>
