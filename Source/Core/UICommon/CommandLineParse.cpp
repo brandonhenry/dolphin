@@ -145,36 +145,7 @@ static void AddConfigLayer(const optparse::Values& options)
   Config::AddLayer(std::make_unique<CommandLineParse::CommandLineConfigLayerLoader>(
       std::move(config_args), static_cast<const char*>(options.get("video_backend")),
       static_cast<const char*>(options.get("audio_emulation")),
-      static_cast<bool>(options.get("batch")), static_cast<bool>(options.get("debugger"))));
-  
-  if (options.is_set("netplay-nickname"))
-  {
-    std::string nickname = options["netplay-nickname"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
-  }
-
-  if (options.is_set("netplay-password"))
-  {
-    std::string password = options["netplay-password"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
-  }
-  
-  if (options.is_set("netplay-room"))
-  {
-    std::string room_name = options["netplay-room"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_NAME, room_name);
-  }
-
-  if (options.is_set("netplay-region"))
-  {
-    std::string region = options["netplay-region"];
-    Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_REGION, region);
-  }
-
-  if (options.is_set("netplay-host-session"))
-  {
-    std::string game_file_name = options["netplay-host-session"];
-  }
+      static_cast<bool>(options.get("batch")), static_cast<bool>(options.get("debugger"))));  
 }
 
 optparse::Values& ParseArguments(optparse::OptionParser* parser, int argc, char** argv)

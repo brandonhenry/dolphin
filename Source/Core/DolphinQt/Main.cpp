@@ -173,6 +173,19 @@ int main(int argc, char* argv[])
   const optparse::Values& options = CommandLineParse::ParseArguments(parser.get(), argc, argv);
   const std::vector<std::string> args = parser->args();
 
+
+  // Add this code after the parsing to print out each parsed option:
+  if (options.is_set("netplay-host-session"))
+  {
+    std::cout << "Netplay host session: " << options["netplay-host-session"] << std::endl;
+  }
+
+  // Add this code to print the args vector:
+  for (auto& arg : args)
+  {
+    std::cout << "Arg: " << arg << std::endl;
+  }
+
 #ifdef _WIN32
   FreeConsole();
 #endif
@@ -260,6 +273,7 @@ int main(int argc, char* argv[])
 
     MainWindow win{std::move(boot), static_cast<const char*>(options.get("movie"))};
     Settings::Instance().SetCurrentUserStyle(Settings::Instance().GetCurrentUserStyle());
+   
     win.Show();
     // Netplay options
     if (options.is_set("netplay-host-session"))
@@ -272,7 +286,6 @@ int main(int argc, char* argv[])
         win.RemoteHost(nickname, password, room, region, game_file_name);
 
     }
-
 
 #if defined(USE_ANALYTICS) && USE_ANALYTICS
     if (!Config::Get(Config::MAIN_ANALYTICS_PERMISSION_ASKED))
