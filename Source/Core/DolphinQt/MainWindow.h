@@ -82,7 +82,7 @@ public:
   bool NetPlayRemoteHost(const UICommon::GameFile& game);
   void MainWindow::RemoteHost(const std::string& nickname, const std::string& password, 
                             const std::string& room, const std::string& region, 
-                            const std::string& filename)
+                            const std::string& filename){};
 
 signals:
   void ReadOnlyModeChanged(bool read_only);

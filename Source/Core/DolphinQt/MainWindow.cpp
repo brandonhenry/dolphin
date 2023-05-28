@@ -1612,7 +1612,7 @@ bool MainWindow::NetPlayRemoteHost(const UICommon::GameFile& game)
   const bool use_upnp = false;
 
   const std::string traversal_host = Config::Get(Config::NETPLAY_TRAVERSAL_SERVER);
-  const u16 traversal_port = Config::Get(Config::NETPLAY_TRAVERSAL_PORT.GetDefaultValue());
+  const u16 traversal_port = Config::NETPLAY_TRAVERSAL_PORT.GetDefaultValue();
 
   // Create Server
   Settings::Instance().ResetNetPlayServer(new NetPlay::NetPlayServer(
@@ -1987,28 +1987,6 @@ void MainWindow::Show()
     StartGame(std::move(m_pending_boot));
     m_pending_boot.reset();
   }
-
-  std::cerr << "Attempting to see if host session is available: "  << "\n";
-  // Netplay options
-
-  try 
-  {
-
-    // UICommon::GameFile game_file(game_file_path);
-    // if(!game_file.IsValid())
-    // {
-    //   std::cerr << "Error: Invalid game file path provided for netplay: " << game_file_path << "\n";
-    //   return 1; // Return an error code
-    // }
-    // NetPlayRemoteHost(game_file);
-
-    std::cerr << "Host session arg found, attempting to remote host: "  << "\n";
-    auto gameFile = m_game_list->GetGameListModel().GetGameFile(0);
-    NetPlayRemoteHost(*gameFile);
-  } catch(const std::exception& e) 
-  {
-    std::cerr << "An error occurred while setting up netplay: " << e.what() << "\n";
-  }
   
 }
 
@@ -2019,7 +1997,7 @@ void MainWindow::RemoteHost(const std::string& nickname, const std::string& pass
   try 
   {
     // Iterate over the game list
-    for (int i = 0; i < m_game_list->GetGameListModel().GetGameCount(); i++)
+    for (int i = 0; i < m_game_list->GetGameListModel().rowCount(QModelIndex()); i++)
     {
         // Get the game file from the list
         auto gameFile = m_game_list->GetGameListModel().GetGameFile(i);
@@ -2030,14 +2008,13 @@ void MainWindow::RemoteHost(const std::string& nickname, const std::string& pass
             std::cout << "Match found, attempting to remote host: " << filename << "\n";
 
             // Setup netplay
-            NetPlay::Config config;
             Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
             Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
             Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_NAME, room);
             Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_REGION, region);
 
             // Start hosting the game
-            NetPlayRemoteHost(*gameFile, config);
+            NetPlayRemoteHost(*gameFile);
             return;
         }
     }
