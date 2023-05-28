@@ -30,7 +30,6 @@
 #include "Core/Core.h"
 #include "Core/DolphinAnalytics.h"
 
-#include "Common/Config/Config.h"  // Newly added import
 #include "Core/Config/NetplaySettings.h"  // Newly added import
 #include "DolphinQt/NetPlay/NetPlaySetupDialog.h"
 #include "GameList.h"

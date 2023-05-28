@@ -1990,4 +1990,27 @@ void MainWindow::Show()
     StartGame(std::move(m_pending_boot));
     m_pending_boot.reset();
   }
+
+  std::cerr << "Attempting to see if host session is available: "  << "\n";
+  // Netplay options
+
+  try 
+  {
+
+    // UICommon::GameFile game_file(game_file_path);
+    // if(!game_file.IsValid())
+    // {
+    //   std::cerr << "Error: Invalid game file path provided for netplay: " << game_file_path << "\n";
+    //   return 1; // Return an error code
+    // }
+    // NetPlayRemoteHost(game_file);
+
+    std::cerr << "Host session arg found, attempting to remote host: "  << "\n";
+    auto gameFile = m_game_list->GetGameListModel().GetGameFile(0);
+    NetPlayRemoteHost(*gameFile);
+  } catch(const std::exception& e) 
+  {
+    std::cerr << "An error occurred while setting up netplay: " << e.what() << "\n";
+  }
+  
 }
