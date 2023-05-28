@@ -17,7 +17,6 @@
 #include <QStyleHints>
 #include <QVBoxLayout>
 #include <QWindow>
-#include "NetPlayCommon.h"
 
 #include <fmt/format.h>
 
@@ -62,6 +61,7 @@
 #include "Core/IOS/USB/Bluetooth/WiimoteDevice.h"
 #include "Core/Movie.h"
 #include "Core/NetPlayClient.h"
+#include "Core/NetPlayCommon.h"
 #include "Core/NetPlayProto.h"
 #include "Core/NetPlayServer.h"
 #include "Core/State.h"
