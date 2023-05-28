@@ -4,6 +4,7 @@
 #include "Core/NetPlayCommon.h"
 
 #include <algorithm>
+#include <fstream>
 
 #include <fmt/format.h>
 #include <lzo/lzo1x.h>
@@ -218,6 +219,43 @@ bool DecompressPacketIntoFile(sf::Packet& packet, const std::string& file_path)
 
   return true;
 }
+
+void NetPlayCommon::LoadConfig(const std::string& configFile) {
+    std::ifstream file(configFile);
+    if (file.is_open()) {
+        std::getline(file, nickname);
+        std::getline(file, password);
+        std::getline(file, room);
+        std::getline(file, region);
+        std::getline(file, filename);
+        file.close();
+    }
+}
+
+const std::string& NetPlayCommon::GetNickname() const {
+    return nickname;
+}
+
+const std::string& NetPlayCommon::GetPassword() const {
+    return password;
+}
+
+const std::string& NetPlayCommon::GetRoom() const {
+    return room;
+}
+
+const std::string& NetPlayCommon::GetRegion() const {
+    return region;
+}
+
+const std::string& NetPlayCommon::GetFilename() const {
+    return filename;
+}
+
+bool NetPlayCommon::IsValid() const {
+    return !nickname.empty() && !password.empty() && !room.empty() && !region.empty() && !filename.empty();
+}
+
 
 static bool DecompressPacketIntoFolderInternal(sf::Packet& packet, const std::string& folder_path)
 {

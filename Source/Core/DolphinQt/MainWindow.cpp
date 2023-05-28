@@ -17,6 +17,7 @@
 #include <QStyleHints>
 #include <QVBoxLayout>
 #include <QWindow>
+#include "NetPlayCommon.h"
 
 #include <fmt/format.h>
 
@@ -63,7 +64,6 @@
 #include "Core/NetPlayClient.h"
 #include "Core/NetPlayProto.h"
 #include "Core/NetPlayServer.h"
-#include "Core/NetPlayConfig.h"
 #include "Core/State.h"
 #include "Core/System.h"
 #include "Core/WiiUtils.h"
@@ -1989,12 +1989,19 @@ void MainWindow::Show()
     m_pending_boot.reset();
   }
 
-  
+  NetPlay::NetPlayCommon netPlayConfig;
   std::string config_path = File::GetUserPath(D_CONFIG_IDX) + "netplay_config.txt";
-  NetPlayConfig config(config_path);
+  netPlayConfig.LoadConfig(config_path);
 
-  if (config.IsValid()) {
-      RemoteHost(config.GetNickname(), config.GetPassword(), config.GetRoom(), config.GetRegion(), config.GetFilename());
+  // Check if it's valid
+  if (netPlayConfig.IsValid()) {
+      RemoteHost(netPlayConfig.GetNickname(), 
+                netPlayConfig.GetPassword(), 
+                netPlayConfig.GetRoom(), 
+                netPlayConfig.GetRegion(), 
+                netPlayConfig.GetFilename());
+  } else {
+      // If not valid, handle error (possibly show message to user or write to log)
   }
 }
 
