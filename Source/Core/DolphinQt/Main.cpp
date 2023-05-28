@@ -12,7 +12,7 @@
 #ifdef __linux__
 #include <cstdlib>
 #endif
-#include <iostream>
+
 
 #include <OptionParser.h>
 #include <QAbstractEventDispatcher>
@@ -232,51 +232,6 @@ int main(int argc, char* argv[])
     game_specified = true;
   }
 
-  std::cerr << "Attempting to see if host session is available: "  << "\n";
-  // Netplay options
-  if (options.is_set("netplay-host-session"))
-  {
-
-    std::cerr << "Host session arg found, attempting to remote host: "  << "\n";
-    try 
-    {
-    
-      DolphinAnalytics::Instance().ReportDolphinStart("qt");
-
-      std::string nickname = options["netplay-nickname"];
-      Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
-
-      std::string password = options["netplay-password"];
-      Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
-
-      std::string room = options["netplay-room"];
-      Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_NAME, room);
-
-      std::string region = options["netplay-region"];
-      Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_REGION, region);
-
-      std::string game_file_path = options["netplay-host-session"];
-
-      MainWindow win{std::move(boot), static_cast<const char*>(options.get("movie"))};
-      Settings::Instance().SetCurrentUserStyle(Settings::Instance().GetCurrentUserStyle());
-      win.Show();
-
-      UICommon::GameFile game_file(game_file_path);
-      if(!game_file.IsValid())
-      {
-        std::cerr << "Error: Invalid game file path provided for netplay: " << game_file_path << "\n";
-        return 1; // Return an error code
-      }
-      win.NetPlayRemoteHost(game_file);
-      return app.exec();
-      } 
-    catch(const std::exception& e) 
-    {
-      std::cerr << "An error occurred while setting up netplay: " << e.what() << "\n";
-      return 1; // Return an error code
-    }
-  }
-
   int retval;
 
   if (save_state_path && !game_specified)
@@ -306,6 +261,18 @@ int main(int argc, char* argv[])
     MainWindow win{std::move(boot), static_cast<const char*>(options.get("movie"))};
     Settings::Instance().SetCurrentUserStyle(Settings::Instance().GetCurrentUserStyle());
     win.Show();
+    // Netplay options
+    if (options.is_set("netplay-host-session"))
+    {
+        std::string nickname = options["netplay-nickname"];
+        std::string password = options["netplay-password"];
+        std::string room = options["netplay-room"];
+        std::string region = options["netplay-region"];
+        std::string game_file_name = options["netplay-host-session"];
+        win.RemoteHost(nickname, password, room, region, game_file_name);
+
+    }
+
 
 #if defined(USE_ANALYTICS) && USE_ANALYTICS
     if (!Config::Get(Config::MAIN_ANALYTICS_PERMISSION_ASKED))

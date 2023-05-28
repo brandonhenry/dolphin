@@ -1607,15 +1607,12 @@ bool MainWindow::NetPlayRemoteHost(const UICommon::GameFile& game)
   }
 
   // Settings
-  u16 host_port = Config::Get(Config::NETPLAY_HOST_PORT);
+  u16 host_port = Config::Get(Config::NETPLAY_LISTEN_PORT);
   const bool is_traversal = true;
   const bool use_upnp = false;
 
   const std::string traversal_host = Config::Get(Config::NETPLAY_TRAVERSAL_SERVER);
-  const u16 traversal_port = Config::Get(Config::NETPLAY_TRAVERSAL_PORT);
-
-  if (is_traversal)
-    host_port = Config::Get(Config::NETPLAY_LISTEN_PORT);
+  const u16 traversal_port = Config::Get(Config::NETPLAY_TRAVERSAL_PORT.GetDefaultValue());
 
   // Create Server
   Settings::Instance().ResetNetPlayServer(new NetPlay::NetPlayServer(
@@ -2014,3 +2011,42 @@ void MainWindow::Show()
   }
   
 }
+
+void MainWindow::RemoteHost(const std::string& nickname, const std::string& password, 
+                            const std::string& room, const std::string& region, 
+                            const std::string& filename)
+{
+  try 
+  {
+    // Iterate over the game list
+    for (int i = 0; i < m_game_list->GetGameListModel().GetGameCount(); i++)
+    {
+        // Get the game file from the list
+        auto gameFile = m_game_list->GetGameListModel().GetGameFile(i);
+
+        // Check if the game file is valid and matches the provided filename
+        if (gameFile && gameFile->GetFileName() == filename)
+        {
+            std::cout << "Match found, attempting to remote host: " << filename << "\n";
+
+            // Setup netplay
+            NetPlay::Config config;
+            Config::SetBaseOrCurrent(Config::NETPLAY_NICKNAME, nickname);
+            Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_PASSWORD, password);
+            Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_NAME, room);
+            Config::SetBaseOrCurrent(Config::NETPLAY_INDEX_REGION, region);
+
+            // Start hosting the game
+            NetPlayRemoteHost(*gameFile, config);
+            return;
+        }
+    }
+
+    std::cerr << "Error: No game matching filename " << filename << " found in game list.\n";
+  } 
+  catch(const std::exception& e) 
+  {
+    std::cerr << "An error occurred while setting up netplay: " << e.what() << "\n";
+  }
+}
+

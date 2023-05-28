@@ -1021,7 +1021,7 @@ configure_file(
   "${PROJECT_SOURCE_DIR}/Source/Core/Common/scmrev.h.in"
   "${PROJECT_BINARY_DIR}/Source/Core/Common/scmrev.h"
 )
-include_directories("${PROJECT_BINARY_DIR}/Source/Core/DolphinQt")
+include_directories("${PROJECT_BINARY_DIR}/Source/Core")
 
 ########################################
 # Unit testing.
