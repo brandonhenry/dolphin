@@ -42,7 +42,7 @@ public:
 
   void OnColumnVisibilityToggled(const QString& row, bool visible);
   void OnGameListVisibilityChanged();
-
+  void ExportGamesToJSON() const;
   void resizeEvent(QResizeEvent* event) override;
 
   void PurgeCache();

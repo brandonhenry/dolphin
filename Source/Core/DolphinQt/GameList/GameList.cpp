@@ -70,7 +70,11 @@
 #include "DolphinQt/Resources.h"
 #include "DolphinQt/Settings.h"
 #include "DolphinQt/WiiUpdate.h"
-
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
+#include <QTextStream>
 #include "UICommon/GameFile.h"
 
 namespace
@@ -530,6 +534,50 @@ void GameList::ShowContextMenu(const QPoint&)
 
   menu->exec(QCursor::pos());
 }
+
+void GameList::ExportGamesToJSON() const
+{
+  // Get the GameListModel
+  const GameListModel& model = GetGameListModel();
+
+  // Create a QJsonArray to hold the data for all the games
+  QJsonArray gamesArray;
+
+  // Get the number of games
+  int numGames = model.rowCount(QModelIndex());
+
+   // Iterate over the game list
+  for (int i = 0; i < numGames; ++i)
+  {
+    // Get the game file for this row
+    auto gameFile = model.GetGameFile(i);
+
+    // Create a QJsonObject to hold the data for this game
+    QJsonObject gameObj;
+    gameObj["name"] = QString::fromStdString(gameFile->GetLongName());
+    gameObj["path"] = QString::fromStdString(gameFile->GetFileName());
+    gameObj["internal_name"] = QString::fromStdString(gameFile->GetInternalName());
+    gameObj["game_id"] = QString::fromStdString(gameFile->GetGameID());
+    gameObj["maker_id"] = QString::fromStdString(gameFile->GetMakerID());
+    gameObj["revision"] = QString::fromStdString(gameFile->GetRevision());
+    gameObj["disc_number"] = QString::fromStdString(gameFile->GetDiscNumber());
+
+    // Add this game's data to the array
+    gamesArray.append(gameObj);
+  }
+
+  // Convert the QJsonArray to a QJsonDocument
+  QJsonDocument doc(gamesArray);
+
+  // Write the QJsonDocument to a file
+  QFile file("dolphin-arena-games.json");
+  if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+  {
+    QTextStream out(&file);
+    out << doc.toJson();
+  }
+}
+
 
 void GameList::OpenProperties()
 {
