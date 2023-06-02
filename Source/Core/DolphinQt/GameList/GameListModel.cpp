@@ -390,8 +390,8 @@ void GameListModel::ExportGamesToJSON() const
     gameObj["internal_name"] = QString::fromStdString(gameFile->GetInternalName());
     gameObj["game_id"] = QString::fromStdString(gameFile->GetGameID());
     gameObj["maker_id"] = QString::fromStdString(gameFile->GetMakerID());
-    gameObj["revision"] = QString::fromStdString(gameFile->GetRevision());
-    gameObj["disc_number"] = QString::fromStdString(gameFile->GetDiscNumber());
+    gameObj["revision"] = QJsonValue(static_cast<int>(gameFile->GetRevision()));
+    gameObj["disc_number"] = QJsonValue(static_cast<int>(gameFile->GetDiscNumber()));
 
     // Add this game's data to the array
     gamesArray.append(gameObj);
