@@ -555,13 +555,13 @@ void GameList::ExportGamesToJSON() const
     // Create a QJsonObject to hold the data for this game
     QJsonObject gameObj;
     if(gameFile != nullptr) {
-        gameObj["name"] = QJsonValue(QString::fromStdString(gameFile->GetLongName()));
-        gameObj["path"] = QJsonValue(QString::fromStdString(gameFile->GetFileName()));
-        gameObj["internal_name"] = QJsonValue(QString::fromStdString(gameFile->GetInternalName()));
-        gameObj["game_id"] = QJsonValue(QString::fromStdString(gameFile->GetGameID()));
-        gameObj["maker_id"] = QJsonValue(QString::fromStdString(gameFile->GetMakerID()));
-        gameObj["revision"] = QJsonValue(static_cast<int>(gameFile->GetRevision()));
-        gameObj["disc_number"] = QJsonValue(static_cast<int>(gameFile->GetDiscNumber()));
+        gameObj["name"] = QJsonValue(QString::fromUtf8(gameFile->GetLongName().c_str()));
+        gameObj["path"] = QJsonValue(QString::fromUtf8(gameFile->GetFileName().c_str()));
+        gameObj["internal_name"] = QJsonValue(QString::fromUtf8(gameFile->GetInternalName().c_str()));
+        gameObj["game_id"] = QJsonValue(QString::fromUtf8(gameFile->GetGameID().c_str()));
+        gameObj["maker_id"] = QJsonValue(QString::fromUtf8(gameFile->GetMakerID().c_str()));
+        gameObj["revision"] = QJsonValue(QString::fromUtf8(std::to_string(gameFile->GetRevision()).c_str()));
+        gameObj["disc_number"] = QJsonValue(QString::fromUtf8(std::to_string(gameFile->GetDiscNumber()).c_str()));
     }
 
     // Add this game's data to the array
@@ -572,7 +572,7 @@ void GameList::ExportGamesToJSON() const
   QJsonDocument doc(gamesArray);
 
   // Write the QJsonDocument to a file
-  QFile file("dolphin-arena-games.json");
+  QFile file(QString("dolphin-arena-games.json"));
   if (file.open(QIODevice::WriteOnly | QIODevice::Text))
   {
     QTextStream out(&file);
