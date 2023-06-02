@@ -83,6 +83,8 @@ public:
 
   void PurgeCache();
 
+  void ExportGamesToJSON() const; 
+
 private:
   // Index in m_games, or -1 if it isn't found
   int FindGameIndex(const std::string& path) const;

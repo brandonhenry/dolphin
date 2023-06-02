@@ -1989,6 +1989,9 @@ void MainWindow::Show()
     m_pending_boot.reset();
   }
 
+  // Export the game list to a JSON file
+  m_game_list->ExportGamesToJSON();
+
   NetPlay::NetPlayCommon netPlayConfig;
   std::string config_path = File::GetUserPath(D_CONFIG_IDX) + "netplay_config.txt";
   netPlayConfig.LoadConfig(config_path);

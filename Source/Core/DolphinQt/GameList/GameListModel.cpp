@@ -19,6 +19,12 @@
 #include "UICommon/GameFile.h"
 #include "UICommon/UICommon.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonArray>
+#include <QFile>
+#include <QTextStream>
+
 const QSize GAMECUBE_BANNER_SIZE(96, 32);
 
 GameListModel::GameListModel(QObject* parent) : QAbstractTableModel(parent)
@@ -340,6 +346,8 @@ void GameListModel::AddGame(const std::shared_ptr<const UICommon::GameFile>& gam
   beginInsertRows(QModelIndex(), m_games.size(), m_games.size());
   m_games.push_back(game);
   endInsertRows();
+  // Export the game list to a JSON file
+  ExportGamesToJSON();
 }
 
 void GameListModel::UpdateGame(const std::shared_ptr<const UICommon::GameFile>& game)
@@ -365,6 +373,40 @@ void GameListModel::RemoveGame(const std::string& path)
   beginRemoveRows(QModelIndex(), entry, entry);
   m_games.removeAt(entry);
   endRemoveRows();
+}
+
+void GameListModel::ExportGamesToJSON() const
+{
+  // Create a QJsonArray to hold the data for all the games
+  QJsonArray gamesArray;
+
+  // Iterate over the game list
+  for (const auto& gameFile : m_games)
+  {
+    // Create a QJsonObject to hold the data for this game
+    QJsonObject gameObj;
+    gameObj["name"] = QString::fromStdString(gameFile->GetLongName());
+    gameObj["path"] = QString::fromStdString(gameFile->GetFileName());
+    gameObj["internal_name"] = QString::fromStdString(gameFile->GetInternalName());
+    gameObj["game_id"] = QString::fromStdString(gameFile->GetGameID());
+    gameObj["maker_id"] = QString::fromStdString(gameFile->GetMakerID());
+    gameObj["revision"] = QString::fromStdString(gameFile->GetRevision());
+    gameObj["disc_number"] = QString::fromStdString(gameFile->GetDiscNumber());
+
+    // Add this game's data to the array
+    gamesArray.append(gameObj);
+  }
+
+  // Convert the QJsonArray to a QJsonDocument
+  QJsonDocument doc(gamesArray);
+
+  // Write the QJsonDocument to a file
+  QFile file("dolphin-arena-games.json");
+  if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+  {
+    QTextStream out(&file);
+    out << doc.toJson();
+  }
 }
 
 std::shared_ptr<const UICommon::GameFile> GameListModel::FindGame(const std::string& path) const
