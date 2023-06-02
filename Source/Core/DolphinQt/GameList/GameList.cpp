@@ -554,13 +554,15 @@ void GameList::ExportGamesToJSON() const
 
     // Create a QJsonObject to hold the data for this game
     QJsonObject gameObj;
-    gameObj["name"] = QString::fromStdString(gameFile->GetLongName());
-    gameObj["path"] = QString::fromStdString(gameFile->GetFileName());
-    gameObj["internal_name"] = QString::fromStdString(gameFile->GetInternalName());
-    gameObj["game_id"] = QString::fromStdString(gameFile->GetGameID());
-    gameObj["maker_id"] = QString::fromStdString(gameFile->GetMakerID());
-    gameObj["revision"] = QJsonValue(static_cast<int>(gameFile->GetRevision()));
-    gameObj["disc_number"] = QJsonValue(static_cast<int>(gameFile->GetDiscNumber()));
+    if(gameFile != nullptr) {
+        gameObj["name"] = QJsonValue(QString::fromStdString(gameFile->GetLongName()));
+        gameObj["path"] = QJsonValue(QString::fromStdString(gameFile->GetFileName()));
+        gameObj["internal_name"] = QJsonValue(QString::fromStdString(gameFile->GetInternalName()));
+        gameObj["game_id"] = QJsonValue(QString::fromStdString(gameFile->GetGameID()));
+        gameObj["maker_id"] = QJsonValue(QString::fromStdString(gameFile->GetMakerID()));
+        gameObj["revision"] = QJsonValue(static_cast<int>(gameFile->GetRevision()));
+        gameObj["disc_number"] = QJsonValue(static_cast<int>(gameFile->GetDiscNumber()));
+    }
 
     // Add this game's data to the array
     gamesArray.append(gameObj);
