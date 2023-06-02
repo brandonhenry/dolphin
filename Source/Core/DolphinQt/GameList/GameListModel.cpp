@@ -19,11 +19,9 @@
 #include "UICommon/GameFile.h"
 #include "UICommon/UICommon.h"
 
-#include <QJsonDocument>
-#include <QJsonObject>
-#include <QJsonArray>
-#include <QFile>
 #include <QTextStream>
+#include <nlohmann/json.hpp>
+#include <fstream>
 
 const QSize GAMECUBE_BANNER_SIZE(96, 32);
 
@@ -377,37 +375,34 @@ void GameListModel::RemoveGame(const std::string& path)
 
 void GameListModel::ExportGamesToJSON() const
 {
-  // Create a QJsonArray to hold the data for all the games
-  QJsonArray gamesArray;
+  // Create a json array to hold the data for all the games
+  nlohmann::json gamesArray = nlohmann::json::array();
 
   // Iterate over the game list
   for (const auto& gameFile : m_games)
   {
-    // Create a QJsonObject to hold the data for this game
-    QJsonObject gameObj;
+    // Create a json object to hold the data for this game
     if(gameFile != nullptr) {
-        gameObj["name"] = QJsonValue(QString::fromUtf8(gameFile->GetLongName().c_str()));
-        gameObj["path"] = QJsonValue(QString::fromUtf8(gameFile->GetFileName().c_str()));
-        gameObj["internal_name"] = QJsonValue(QString::fromUtf8(gameFile->GetInternalName().c_str()));
-        gameObj["game_id"] = QJsonValue(QString::fromUtf8(gameFile->GetGameID().c_str()));
-        gameObj["maker_id"] = QJsonValue(QString::fromUtf8(gameFile->GetMakerID().c_str()));
-        gameObj["revision"] = QJsonValue(QString::fromUtf8(std::to_string(gameFile->GetRevision()).c_str()));
-        gameObj["disc_number"] = QJsonValue(QString::fromUtf8(std::to_string(gameFile->GetDiscNumber()).c_str()));
-    }
+        nlohmann::json gameObj = {
+            {"name", gameFile->GetLongName()},
+            {"path", gameFile->GetFileName()},
+            {"internal_name", gameFile->GetInternalName()},
+            {"game_id", gameFile->GetGameID()},
+            {"maker_id", gameFile->GetMakerID()},
+            {"revision", std::to_string(gameFile->GetRevision())},
+            {"disc_number", std::to_string(gameFile->GetDiscNumber())}
+        };
 
-    // Add this game's data to the array
-    gamesArray.append(gameObj);
+        // Add this game's data to the array
+        gamesArray.push_back(gameObj);
+    }
   }
 
-  // Convert the QJsonArray to a QJsonDocument
-  QJsonDocument doc(gamesArray);
-
-  // Write the QJsonDocument to a file
-  QFile file(QString("dolphin-arena-games.json"));
-  if (file.open(QIODevice::WriteOnly | QIODevice::Text))
+  // Write the json array to a file
+  std::ofstream file("dolphin-arena-games.json");
+  if (file.is_open())
   {
-    QTextStream out(&file);
-    out << doc.toJson();
+    file << gamesArray.dump(4);  // 4 spaces of indentation
   }
 }
 
