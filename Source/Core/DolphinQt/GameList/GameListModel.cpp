@@ -20,7 +20,7 @@
 #include "UICommon/UICommon.h"
 
 #include <QTextStream>
-#include <nlohmann/json.hpp>
+#include "picojson.h"
 #include <fstream>
 
 const QSize GAMECUBE_BANNER_SIZE(96, 32);
@@ -375,34 +375,40 @@ void GameListModel::RemoveGame(const std::string& path)
 
 void GameListModel::ExportGamesToJSON() const
 {
-  // Create a json array to hold the data for all the games
-  nlohmann::json gamesArray = nlohmann::json::array();
+  // Create a picojson array to hold the data for all the games
+  picojson::array gamesArray;
 
   // Iterate over the game list
   for (const auto& gameFile : m_games)
   {
-    // Create a json object to hold the data for this game
+    // Check if the gameFile pointer is not null
     if(gameFile != nullptr) {
-        nlohmann::json gameObj = {
-            {"name", gameFile->GetLongName()},
-            {"path", gameFile->GetFileName()},
-            {"internal_name", gameFile->GetInternalName()},
-            {"game_id", gameFile->GetGameID()},
-            {"maker_id", gameFile->GetMakerID()},
-            {"revision", std::to_string(gameFile->GetRevision())},
-            {"disc_number", std::to_string(gameFile->GetDiscNumber())}
+        // Create a picojson object to hold the data for this game
+        picojson::object gameObj = {
+            {"name", picojson::value(gameFile->GetLongName())},
+            {"path", picojson::value(gameFile->GetFileName())},
+            {"internal_name", picojson::value(gameFile->GetInternalName())},
+            {"game_id", picojson::value(gameFile->GetGameID())},
+            {"maker_id", picojson::value(gameFile->GetMakerID())},
+            {"disc_number", picojson::value(static_cast<double>(gameFile->GetDiscNumber()))}
         };
 
         // Add this game's data to the array
-        gamesArray.push_back(gameObj);
+        gamesArray.push_back(picojson::value(gameObj));
     }
   }
 
-  // Write the json array to a file
+  // Create a picojson value from the gamesArray
+  picojson::value gamesValue(gamesArray);
+
+  // Write the picojson value to a string
+  std::string gamesJSON = gamesValue.serialize(true);  // true for pretty-printing
+
+  // Write the string to a file
   std::ofstream file("dolphin-arena-games.json");
   if (file.is_open())
   {
-    file << gamesArray.dump(4);  // 4 spaces of indentation
+    file << gamesJSON;
   }
 }
 

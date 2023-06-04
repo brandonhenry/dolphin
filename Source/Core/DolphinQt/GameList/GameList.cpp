@@ -74,7 +74,7 @@
 #include <QTextStream>
 #include "UICommon/GameFile.h"
 
-#include <nlohmann/json.hpp>
+#include "picojson.h"
 #include <fstream>
 
 namespace
@@ -537,35 +537,7 @@ void GameList::ShowContextMenu(const QPoint&)
 
 void GameList::ExportGamesToJSON() const
 {
-  // Create a json array to hold the data for all the games
-  nlohmann::json gamesArray = nlohmann::json::array();
-
-  // Iterate over the game list
-  for (const auto& gameFile : m_model.GetGameList())
-  {
-    // Check if the gameFile pointer is not null
-    if(gameFile) {
-        // Create a json object to hold the data for this game
-        nlohmann::json gameObj;
-        gameObj["name"] = gameFile->GetLongName();
-        gameObj["path"] = gameFile->GetFileName();
-        gameObj["internal_name"] = gameFile->GetInternalName();
-        gameObj["game_id"] = gameFile->GetGameID();
-        gameObj["maker_id"] = gameFile->GetMakerID();
-        gameObj["revision"] = std::to_string(gameFile->GetRevision());
-        gameObj["disc_number"] = std::to_string(gameFile->GetDiscNumber());
-
-        // Add this game's data to the array
-        gamesArray.push_back(gameObj);
-    }
-  }
-
-  // Write the json array to a file
-  std::ofstream file("dolphin-arena-games.json");
-  if (file.is_open())
-  {
-    file << gamesArray.dump(4);  // 4 spaces of indentation
-  }
+  m_model.ExportGamesToJSON();
 }
 
 void GameList::OpenProperties()
